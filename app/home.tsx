@@ -3,12 +3,11 @@ import { View, Text, StyleSheet } from "react-native";
 import ApiContext from "@/context/ApiContext"; // Import ApiContext
 
 const Home = () => {
-  const { url } = useContext(ApiContext); // Access the `url` from context
+  const { user } = useContext(ApiContext); // Access the `url` from context
 
   return (
     <View style={styles.container}>
-      <Text style={styles.welcomeText}>Welcome Student</Text>
-      <Text style={styles.urlText}>API URL: {url}</Text>
+      <Text style={styles.welcomeText}>Welcome {user}</Text>
     </View>
   );
 };

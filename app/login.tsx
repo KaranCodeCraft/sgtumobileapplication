@@ -1,11 +1,14 @@
 import { View, Text, Image, StyleSheet, TextInput, Alert } from "react-native";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Button from "@/components/Button";
 import { useRouter } from "expo-router";
+import ApiContext from "@/context/ApiContext";
 
 const Login = () => {
+  const {setUser} = useContext(ApiContext)
   const [aadhar , setAadhar] = useState("")
   const [mobile , setMobile] = useState("")
+
   const router = useRouter();
   const handleLogin = async() => {
     if(!aadhar||!mobile) return Alert.alert("Please fill all the fields")
@@ -20,8 +23,10 @@ const Login = () => {
           password: mobile,
         }),
       })
+      const data = await response.json();
       if (response.status.toString() == "200") {
-        Alert.alert("Login Succesfull");
+        setUser(data.user.username);
+        Alert.alert(`Login Succesfull ${data.user.username}`);
         router.push("./home");
       } else {
         Alert.alert("Invalid Credentials");

@@ -3,37 +3,46 @@ import React, { useContext, useState } from "react";
 import Button from "@/components/Button";
 import { useRouter } from "expo-router";
 import ApiContext from "@/context/ApiContext";
+import * as SecureStore from "expo-secure-store";
 
 const Login = () => {
-  const {setUser} = useContext(ApiContext)
-  const [aadhar , setAadhar] = useState("")
-  const [mobile , setMobile] = useState("")
+  const { setUser } = useContext(ApiContext); // Use context to set user
+  const [aadhar, setAadhar] = useState(""); // State to store aadhar number
+  const [mobile, setMobile] = useState(""); // State to store mobile number
 
   const router = useRouter();
-  const handleLogin = async() => {
-    if(!aadhar||!mobile) return Alert.alert("Please fill all the fields")
+
+  const handleLogin = async () => {
+    if (!aadhar || !mobile) {
+      return Alert.alert("Please fill all the fields");
+    }
     try {
-      const response = await fetch(`https://api.sgtu.co.in/api/auth/local`,{
-        method: 'POST',
+      // Make the API call to login
+      const response = await fetch(`https://api.sgtu.co.in/api/auth/local`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           identifier: aadhar,
           password: mobile,
         }),
-      })
+      });
+
       const data = await response.json();
-      if (response.status.toString() == "200") {
+
+      if (response.status.toString() === "200") {
+        // Store token and set user in context
+        await SecureStore.setItemAsync("token", data.jwt);
         setUser(data.user.username);
-        Alert.alert(`Login Succesfull ${data.user.username}`);
-        router.push("./home");
+        Alert.alert(`Login Successful ${data.user.username}`);
+        router.push("/home"); // Navigate to the home screen
       } else {
         Alert.alert("Invalid Credentials");
       }
     } catch (error) {
       console.error(error);
-      Alert.alert("Please try Again Later")
+      Alert.alert("Please try again later");
     }
   };
 
@@ -47,8 +56,18 @@ const Login = () => {
         />
       </View>
       <Text style={styles.title}>Login Page</Text>
-      <TextInput placeholder="Aadhar number" style={styles.input} onChangeText={(e)=>setAadhar(e)}/>
-      <TextInput placeholder="Registered Mobile Number" style={styles.input} onChangeText={(e)=>setMobile(e)}/>
+      <TextInput
+        placeholder="Aadhar number"
+        style={styles.input}
+        onChangeText={setAadhar}
+        value={aadhar}
+      />
+      <TextInput
+        placeholder="Registered Mobile Number"
+        style={styles.input}
+        onChangeText={setMobile}
+        value={mobile}
+      />
       <Button name={"login"} onPress={handleLogin} />
     </View>
   );

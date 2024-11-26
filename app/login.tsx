@@ -18,14 +18,14 @@ const Login = () => {
     }
     try {
       // Make the API call to login
-      const response = await fetch(`https://api.sgtu.co.in/api/auth/local`, {
+      const response = await fetch(`https://api.sgtu.co.in/api/aadhaar-login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          identifier: aadhar,
-          password: mobile,
+          aadhaarNumber: aadhar,
+          enrollmentNumber: mobile,
         }),
       });
 
@@ -33,9 +33,10 @@ const Login = () => {
 
       if (response.status.toString() === "200") {
         // Store token and set user in context
-        await SecureStore.setItemAsync("token", data.jwt);
-        setUser(data.user.username);
-        Alert.alert(`Login Successful ${data.user.username}`);
+        // Alert.alert(data)
+        await SecureStore.setItemAsync("token", data.token);
+        setUser(data.user.name);
+        Alert.alert(`Login Successful ${data.user.name}`);
         router.push("/home"); // Navigate to the home screen
       } else {
         Alert.alert("Invalid Credentials");
@@ -63,7 +64,7 @@ const Login = () => {
         value={aadhar}
       />
       <TextInput
-        placeholder="Registered Mobile Number"
+        placeholder="Registration Number"
         style={styles.input}
         onChangeText={setMobile}
         value={mobile}

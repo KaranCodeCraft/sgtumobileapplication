@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  Image,
 } from "react-native";
 import { useRouter } from "expo-router";
 import ApiContext from "@/context/ApiContext";
@@ -54,6 +55,13 @@ const StudentPanel = () => {
 
   return (
     <View style={styles.container}>
+      {/* University Logo */}
+      <Image
+        source={require("@/Assets/logo.png")}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+
       {/* Logout Button */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Ionicons name="log-out-outline" size={24} color="#fff" />
@@ -103,6 +111,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginTop: 10,
     color: "#555",
+  },
+  logo: {
+    width: 150,
+    height: 150,
+    marginBottom: 20,
   },
   logoutButton: {
     position: "absolute",

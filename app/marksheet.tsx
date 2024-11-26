@@ -19,6 +19,7 @@ const Marksheet = () => {
           { id: "1", subject: "Mathematics", marks: "95/100" },
           { id: "2", subject: "Physics", marks: "88/100" },
           { id: "3", subject: "Chemistry", marks: "92/100" },
+          { id: "4", subject: "Sonali", marks: "Franchisee Manager" },
         ];
         setMarksheet(dummyData);
       } catch (error) {

@@ -1,33 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
   ActivityIndicator,
+  Modal,
+  TouchableOpacity,
 } from "react-native";
+import ApiContext from "@/context/ApiContext";
+import * as SecureStore from "expo-secure-store";
 
 const Notifications = () => {
+  const { url } = useContext(ApiContext);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedNotification, setSelectedNotification] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        // Replace with your API call to fetch notifications
-        const dummyData = [
-          {
-            id: "1",
-            title: "Exam Scheduled",
-            description: "Your exam is on 20th Nov",
+        const token = await SecureStore.getItemAsync("token");
+        const response = await fetch(`${url}/api/notifications`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
           },
-          {
-            id: "2",
-            title: "New Assignment",
-            description: "Submit by 25th Nov",
-          },
-        ];
-        setNotifications(dummyData);
+        });
+        const dummyData = await response.json();
+        setNotifications(dummyData.data);
       } catch (error) {
         console.error("Error fetching notifications:", error);
       } finally {
@@ -37,6 +39,11 @@ const Notifications = () => {
 
     fetchNotifications();
   }, []);
+
+  const handleNotificationClick = (notification) => {
+    setSelectedNotification(notification);
+    setModalVisible(true);
+  };
 
   if (loading) {
     return (
@@ -55,15 +62,41 @@ const Notifications = () => {
           data={notifications}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>{item.title}</Text>
-              <Text style={styles.cardDescription}>{item.description}</Text>
-            </View>
+            <TouchableOpacity onPress={() => handleNotificationClick(item)}>
+              <View style={styles.card}>
+                <Text style={styles.cardTitle}>{item.title}</Text>
+                <Text style={styles.cardDescription}>
+                  {item.description.split(" ").slice(0, 10).join(" ")}...
+                </Text>
+              </View>
+            </TouchableOpacity>
           )}
         />
       ) : (
         <Text style={styles.noDataText}>No notifications available.</Text>
       )}
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>{selectedNotification?.title}</Text>
+            <Text style={styles.modalDescription}>
+              {selectedNotification?.description}
+            </Text>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -89,6 +122,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
+    color: "orange",
   },
   card: {
     backgroundColor: "#fff",
@@ -115,6 +149,41 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 16,
     color: "#888",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    width: "90%",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#333",
+  },
+  modalDescription: {
+    fontSize: 16,
+    color: "#555",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  closeButton: {
+    backgroundColor: "#007BFF",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
 

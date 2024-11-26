@@ -9,17 +9,17 @@ const ApiState = (props) => {
 
     async function verifyToken(token) {
       try {
-        const response = await fetch(`${url}/api/users/me`, {
-          method: "GET",
+        const response = await fetch(`${url}/api/aadhaar-login/verify-token`, {
+          method: "POST",
           headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
           },
+          body: JSON.stringify({ token })
         });
         const data = await response.json();
        setUser(data.username);
         
-        if(response.status = 200)return true;
+        if(response.status == 200)return true;
 
         return false
       } catch (error) {

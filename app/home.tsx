@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
   Alert,
@@ -46,128 +45,94 @@ const StudentPanel = () => {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1  items-center bg-gray-100">
         <ActivityIndicator size="large" color="#0000ff" />
-        <Text style={styles.loadingText}>Loading your panel...</Text>
+        <Text className="text-lg text-gray-600 mt-4">
+          Loading your panel...
+        </Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 justify-center items-center bg-gray-100 px-6">
       {/* University Logo */}
       <Image
         source={require("@/Assets/logo.png")}
-        style={styles.logo}
+        className="w-36 h-36 mb-6"
         resizeMode="contain"
       />
 
       {/* Logout Button */}
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+      <TouchableOpacity
+        className="absolute top-10 right-6 bg-red-500 p-3 rounded-full shadow-md"
+        onPress={handleLogout}
+      >
         <Ionicons name="log-out-outline" size={24} color="#fff" />
       </TouchableOpacity>
 
-      <Text style={styles.greetingText}>Welcome, {user || "Student"}!</Text>
-      <Text style={styles.subText}>Choose an option below:</Text>
+      {/* Welcome Text */}
+      <Text className="text-2xl font-bold text-gray-800 text-center mb-2">
+        Welcome, {user || "Student"}!
+      </Text>
+      <Text className="text-base text-gray-600 text-center mb-6">
+        Choose an option below:
+      </Text>
 
-      <View style={styles.optionContainer}>
-        {/* Notifications */}
-        <TouchableOpacity
-          style={styles.card}
-          onPress={() => router.push("./notifications")}
-        >
-          <Ionicons name="notifications" size={50} color="#4CAF50" />
-          <Text style={styles.cardText}>Notifications</Text>
-        </TouchableOpacity>
+      {/* Options */}
+      <View className="w-full flex flex-col items-baseline mb-2">
+        {/* First Row of Buttons */}
+        <View className="flex flex-row justify-between w-full px-6 py-2">
+          {/* Notifications */}
+          <TouchableOpacity
+            className="w-36 h-36 bg-white rounded-lg justify-center items-center shadow-md"
+            onPress={() => router.push("./notifications")}
+          >
+            <Ionicons name="notifications" size={50} color="#4CAF50" />
+            <Text className="text-sm text-gray-700 mt-2 text-center">
+              Notifications
+            </Text>
+          </TouchableOpacity>
 
-        {/* View Marksheet */}
-        <TouchableOpacity
-          style={styles.card}
-          onPress={() => router.push("./marksheet")}
-        >
-          <Ionicons name="document-text" size={50} color="#2196F3" />
-          <Text style={styles.cardText}>View Marksheet</Text>
-        </TouchableOpacity>
+          {/* View Marksheet */}
+          <TouchableOpacity
+            className="w-36 h-36 bg-white rounded-lg justify-center items-center shadow-md"
+            onPress={() => router.push("./marksheet")}
+          >
+            <Ionicons name="document-text" size={50} color="#2196F3" />
+            <Text className="text-sm text-gray-700 mt-2 text-center">
+              View Marksheet
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Second Row of Buttons */}
+        <View className="flex flex-row justify-between w-full px-6 py-2">
+          {/* Upload Documents */}
+          <TouchableOpacity
+            className="w-36 h-36 bg-white rounded-lg justify-center items-center shadow-md"
+            onPress={() => router.push("./upload")}
+          >
+            <Ionicons name="cloud-upload-outline" size={50} color="#FF9800" />
+            <Text className="text-sm text-gray-700 mt-2 text-center">
+              Upload Documents
+            </Text>
+          </TouchableOpacity>
+
+          {/* Manage Subscription */}
+          <TouchableOpacity
+            className="w-36 h-36 bg-white rounded-lg justify-center items-center shadow-md"
+            onPress={() => router.push("./subscription")}
+          >
+            <Ionicons name="person-add" size={50} color="#9C27B0" />
+            <Text className="text-sm text-gray-700 mt-2 text-center">
+              Manage Subscription
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#f9f9f9",
-    padding: 20,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#f0f4f8",
-  },
-  loadingText: {
-    fontSize: 18,
-    marginTop: 10,
-    color: "#555",
-  },
-  logo: {
-    width: 150,
-    height: 150,
-    marginBottom: 20,
-  },
-  logoutButton: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-    backgroundColor: "#ff5252",
-    padding: 10,
-    borderRadius: 50,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  greetingText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#333",
-    textAlign: "center",
-    marginBottom: 10,
-  },
-  subText: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  optionContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  card: {
-    width: 140,
-    height: 140,
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    margin: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  cardText: {
-    marginTop: 10,
-    fontSize: 14,
-    textAlign: "center",
-    color: "#555",
-  },
-});
 
 export default StudentPanel;

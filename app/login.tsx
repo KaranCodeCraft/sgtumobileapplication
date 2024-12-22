@@ -1,14 +1,21 @@
-import { View, Text, Image, StyleSheet, TextInput, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Alert,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 import React, { useContext, useState } from "react";
-import Button from "@/components/Button";
 import { useRouter } from "expo-router";
 import ApiContext from "@/context/ApiContext";
 import * as SecureStore from "expo-secure-store";
+import Button from "@/components/Button";
 
 const Login = () => {
-  const { setUser } = useContext(ApiContext); // Use context to set user
-  const [aadhar, setAadhar] = useState(""); // State to store aadhar number
-  const [mobile, setMobile] = useState(""); // State to store mobile number
+  const { setUser } = useContext(ApiContext);
+  const [aadhar, setAadhar] = useState("");
+  const [mobile, setMobile] = useState("");
 
   const router = useRouter();
 
@@ -17,7 +24,6 @@ const Login = () => {
       return Alert.alert("Please fill all the fields");
     }
     try {
-      // Make the API call to login
       const response = await fetch(`https://api.sgtu.co.in/api/aadhaar-login`, {
         method: "POST",
         headers: {
@@ -32,12 +38,10 @@ const Login = () => {
       const data = await response.json();
 
       if (response.status.toString() === "200") {
-        // Store token and set user in context
-        // Alert.alert(data)
         await SecureStore.setItemAsync("token", data.token);
         setUser(data.user.name);
         Alert.alert(`Login Successful ${data.user.name}`);
-        router.push("/home"); // Navigate to the home screen
+        router.push("/home");
       } else {
         Alert.alert("Invalid Credentials");
       }
@@ -48,76 +52,44 @@ const Login = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.imageWrapper}>
+    <View className="flex-1 justify-center items-center bg-gray-100 p-6">
+      <View className="h-48 w-48 bg-white rounded-full overflow-hidden justify-center items-center mb-6">
         <Image
           source={require("@/Assets/logo.png")}
-          style={styles.image}
+          className="h-full w-10/12 bg-inherit"
           resizeMode="cover"
         />
       </View>
-      <Text style={styles.title}>Login Page</Text>
+      <Text className="text-blue-600 font-bold text-2xl mb-4">Login Page</Text>
       <TextInput
         placeholder="Aadhar number"
-        style={styles.input}
+        className="w-4/5 h-12 border border-gray-400 mb-4 px-4 rounded-lg bg-white shadow"
         onChangeText={setAadhar}
         value={aadhar}
+        keyboardType="numeric"
       />
       <TextInput
         placeholder="Registration Number"
-        style={styles.input}
+        className="w-4/5 h-12 border border-gray-400 mb-4 px-4 rounded-lg bg-white shadow"
         onChangeText={setMobile}
         value={mobile}
+        keyboardType="numeric"
       />
-      <Button name={"login"} onPress={handleLogin} />
+      {/* <Button name={"login"} onPress={handleLogin} /> */}
+      <TouchableOpacity
+        className="w-4/5 mt-6 flex justify-center items-center bg-orange-400 py-2 px-6 rounded-lg"
+        onPress={handleLogin}
+      >
+        <Text className="text-white font-bold text-lg">Login</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        className="w-4/5 mt-6 flex justify-center items-center bg-blue-500 py-2 px-6 rounded-lg"
+        onPress={() => router.push("/signup")}
+      >
+        <Text className="text-white font-bold text-lg">Register</Text>
+      </TouchableOpacity>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  input: {
-    width: "80%",
-    height: 40,
-    borderWidth: 1,
-    borderColor: "grey",
-    marginBottom: 15,
-    paddingLeft: 10,
-    borderRadius: 5,
-    backgroundColor: "#f9f9f9",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#f0f4f8",
-    padding: 20,
-  },
-  imageWrapper: {
-    height: 200,
-    width: 200,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 100,
-    overflow: "hidden",
-    marginBottom: 30,
-  },
-  image: {
-    height: 200,
-    width: 200,
-  },
-  title: {
-    marginBottom: 20,
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#333",
-    textAlign: "center",
-  },
-});
 
 export default Login;

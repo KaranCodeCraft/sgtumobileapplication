@@ -24,7 +24,7 @@ const ApiState = (props) => {
         return false
       } catch (error) {
         console.error("Error verifying token:", error);
-        return false; // Return null in case of an error
+        return false;
       }
     }
 

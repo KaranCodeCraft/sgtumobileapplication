@@ -1,18 +1,55 @@
-import { View, Text, TextInput, TouchableOpacity, Image, Alert } from "react-native";
-import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  Alert,
+} from "react-native";
+import React, { useContext, useState } from "react";
 import { useRouter } from "expo-router";
+import ApiContext from "@/context/ApiContext";
+import * as SecureStore from "expo-secure-store";
 
 const SignUp = () => {
   const router = useRouter();
   const [aadhar, setAadhar] = useState("");
   const [registration, setRegistration] = useState("");
-  const [dob, setDob] = useState("");
+  const { url } = useContext(ApiContext);
 
-  const handleSignUp = () => {
-    if (!aadhar || !registration || !dob) {
+  const handleSignUp = async () => {
+    if (!aadhar || !registration) {
       return Alert.alert("Please fill all the fields");
     }
-    // Add signup logic here
+    try {
+      const response = await fetch(`${url}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          aadhaarNumber: aadhar,
+          enrollmentNumber: registration,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.status.toString() === "200") {
+        await SecureStore.setItemAsync("token", data.token);
+        // Optionally, you could store user data if returned in the response
+        Alert.alert(
+          `Sign-Up Successful. OTP sent to your registered mobile number.`
+        );
+        // After the sign-up process, redirect to the OTP verification page
+        router.push("/otp-verification");
+      } else {
+        Alert.alert("Failed to sign up. Please check your details.");
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("An error occurred. Please try again later.");
+    }
   };
 
   return (
@@ -38,19 +75,17 @@ const SignUp = () => {
         keyboardType="numeric"
       />
       <TextInput
-        placeholder="Registration Number"
+        placeholder="Enrollment Number"
         className="w-4/5 h-12 border border-gray-400 mb-4 px-4 rounded-lg bg-white shadow"
         onChangeText={setRegistration}
         value={registration}
         keyboardType="numeric"
       />
-      <TextInput
-        placeholder="Date of Birth (DD/MM/YYYY)"
-        className="w-4/5 h-12 border border-gray-400 mb-4 px-4 rounded-lg bg-white shadow"
-        onChangeText={setDob}
-        value={dob}
-        keyboardType="default"
-      />
+
+      {/* OTP Information */}
+      <Text className="text-gray-600 text-sm mb-4">
+        OTP will be sent to your registered mobile number for verification.
+      </Text>
 
       {/* Sign Up Button */}
       <TouchableOpacity
@@ -68,12 +103,6 @@ const SignUp = () => {
         Already have an account?
         <Text className="text-blue-600 font-medium">Login</Text>
       </Text>
-      {/* <TouchableOpacity
-        className="w-4/5 mt-6 flex justify-center items-center bg-blue-500 py-2 px-6 rounded-lg"
-        onPress={() => router.push("/login")}
-      >
-        <Text className="text-white font-bold text-lg">Login</Text>
-      </TouchableOpacity> */}
     </View>
   );
 };

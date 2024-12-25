@@ -10,44 +10,36 @@ import React, { useContext, useState } from "react";
 import { useRouter } from "expo-router";
 import ApiContext from "@/context/ApiContext";
 import * as SecureStore from "expo-secure-store";
-import Button from "@/components/Button";
+import axios from "axios";
+
 
 const Login = () => {
-  const { setUser } = useContext(ApiContext);
-  const [aadhar, setAadhar] = useState("");
-  const [mobile, setMobile] = useState("");
+  const { setUser, url } = useContext(ApiContext);
+  const [aadharNumber, setaadharNumber] = useState("");
+  const [enrollmentNumber, setEnrollmentNumber] = useState("");
 
   const router = useRouter();
 
   const handleLogin = async () => {
-    if (!aadhar || !mobile) {
+    if (!aadharNumber || !enrollmentNumber) {
       return Alert.alert("Please fill all the fields");
     }
     try {
-      const response = await fetch(`https://api.sgtu.co.in/api/aadhaar-login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          aadhaarNumber: aadhar,
-          enrollmentNumber: mobile,
-        }),
+      const response = await axios.post(`${url}student/login`, {
+        enrollmentNumber,
+        aadharNumber: Number(aadharNumber)
       });
 
-      const data = await response.json();
-
-      if (response.status.toString() === "200") {
-        await SecureStore.setItemAsync("token", data.token);
-        setUser(data.user.name);
-        Alert.alert(`Login Successful ${data.user.name}`);
-        router.push("/home");
-      } else {
-        Alert.alert("Invalid Credentials");
-      }
+      await SecureStore.setItemAsync("token", response.data.token);
+      setUser(response.data.name);
+      Alert.alert(`Login Successful ${response.data.name}`);
+      router.push("/home");
     } catch (error) {
-      console.error(error);
-      Alert.alert("Please try again later");
+      if (error.response) {
+        Alert.alert(error.response.data.message);
+      } else {
+        Alert.alert("Something went wrong. Please try again.");
+      }
     }
   };
 
@@ -64,16 +56,15 @@ const Login = () => {
       <TextInput
         placeholder="Aadhar number"
         className="w-4/5 h-12 border border-gray-400 mb-4 px-4 rounded-lg bg-white shadow"
-        onChangeText={setAadhar}
-        value={aadhar}
-        keyboardType="numeric"
+        onChangeText={setaadharNumber}
+        value={aadharNumber}
+        keyboardType="number-pad"
       />
       <TextInput
         placeholder="Registration Number"
         className="w-4/5 h-12 border border-gray-400 mb-4 px-4 rounded-lg bg-white shadow"
-        onChangeText={setMobile}
-        value={mobile}
-        keyboardType="numeric"
+        onChangeText={setEnrollmentNumber}
+        value={enrollmentNumber}
       />
       {/* <Button name={"login"} onPress={handleLogin} /> */}
       <TouchableOpacity

@@ -18,5 +18,5 @@
     "context/ctx.js",
     "components/Button.js",
     "nativewind-env.d.ts"
-  ]
+, "app/login.js", "app/signup.js"  ]
 }

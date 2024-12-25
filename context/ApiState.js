@@ -4,7 +4,7 @@ import { Alert } from "react-native";
 
 
 const ApiState = (props) => {
-    const url = "https://api.sgtu.co.in"
+    const url = "http://192.168.1.100:5000/"
     const [user, setUser] = useState("")
 
     async function verifyToken(token) {

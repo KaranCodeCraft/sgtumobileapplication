@@ -21,8 +21,8 @@ const StudentPanel = () => {
   useEffect(() => {
     const fetchToken = async () => {
       try {
-        const storedToken = await SecureStore.getItemAsync("token");
-        setToken(storedToken);
+        // const storedToken = await SecureStore.getItemAsync("token");
+        // setToken(storedToken);
       } catch (error) {
         console.error("Error fetching token", error);
       } finally {

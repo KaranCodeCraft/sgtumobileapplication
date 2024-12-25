@@ -1,73 +1,46 @@
 import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useRouter } from "expo-router";
+import ApiContext from "@/context/ApiContext";
 import * as SecureStore from "expo-secure-store";
+import axios from "axios";
 
 const OtpVerification = () => {
   const router = useRouter();
-  const [otp, setOtp] = useState(""); // Store OTP input
-  const [loading, setLoading] = useState(false); // For loading state
-  const [timer, setTimer] = useState(30); // Timer to resend OTP after some time
-
-  // Simulate OTP verification with an API call (adjust to your real API)
+  const { url } = useContext(ApiContext);
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false); 
   const handleOtpSubmit = async () => {
     if (otp.length !== 6) {
       return Alert.alert("Please enter a valid 6-digit OTP");
     }
     try {
+      const reference_id = await SecureStore.getItemAsync("referenceId");
       setLoading(true);
-      // Simulating API request for OTP verification
-      const response = await fetch("http://localhost:5000/student/verify-otp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          otp: otp, // Send the OTP entered by the user
-        }),
-      });
 
-      const data = await response.json();
+      let data = {
+        otp,
+        reference_id,
+      };
+      const response = await axios.post(`${url}student/verifyOtp`, data);
 
       if (response.status === 200) {
-        // Assuming the API returns a token and a success message
-        await SecureStore.setItemAsync("token", data.token);
         Alert.alert("OTP Verified Successfully");
-        router.push("/home"); // Redirect to home after successful OTP verification
+        router.push("/home"); 
       } else {
         Alert.alert("Invalid OTP. Please try again.");
       }
     } catch (error) {
-      console.error(error);
-      Alert.alert("Something went wrong. Please try again.");
+      if (error.response) {
+        Alert.alert(error.response.data.message);
+      } else {
+        Alert.alert("Something went wrong. Please try again.");
+        Alert.alert(error.message);
+      }
     } finally {
       setLoading(false);
     }
   };
-
-  // Handle Resend OTP logic (simulate resend by resetting timer)
-  const handleResendOtp = () => {
-    if (timer === 0) {
-      // Reset the timer for resend
-      setTimer(30);
-      // Call an API to resend the OTP (simulating here)
-      Alert.alert("OTP resent successfully");
-    } else {
-      Alert.alert(
-        `Please wait for ${timer} seconds before requesting another OTP.`
-      );
-    }
-  };
-
-  // Timer countdown logic
-  React.useEffect(() => {
-    if (timer > 0) {
-      const interval = setInterval(() => {
-        setTimer((prevTimer) => prevTimer - 1);
-      }, 1000);
-      return () => clearInterval(interval); // Cleanup timer when component unmounts
-    }
-  }, [timer]);
 
   return (
     <View className="flex-1 justify-center items-center bg-gray-100 p-6">
@@ -95,15 +68,15 @@ const OtpVerification = () => {
       </TouchableOpacity>
 
       {/* Resend OTP */}
-      <TouchableOpacity
+      {/* <TouchableOpacity
         className="w-4/5 mt-4 flex justify-center items-center bg-blue-500 py-2 px-6 rounded-lg"
         onPress={handleResendOtp}
-        disabled={timer > 0} // Disable resend if timer is not zero
+        disabled={timer > 0} 
       >
         <Text className="text-white font-bold text-lg">
           {timer === 0 ? "Resend OTP" : `Resend OTP in ${timer}s`}
         </Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       {/* Redirect to Sign Up */}
       <Text

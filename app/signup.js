@@ -10,45 +10,44 @@ import React, { useContext, useState } from "react";
 import { useRouter } from "expo-router";
 import ApiContext from "@/context/ApiContext";
 import * as SecureStore from "expo-secure-store";
+import axios from "axios";
 
 const SignUp = () => {
   const router = useRouter();
-  const [aadhar, setAadhar] = useState("");
-  const [registration, setRegistration] = useState("");
+  const [aadharNumber, setaadharNumber] = useState("");
+  const [enrollmentNumber, setenrollmentNumber] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { url } = useContext(ApiContext);
 
   const handleSignUp = async () => {
-    if (!aadhar || !registration) {
-      return Alert.alert("Please fill all the fields");
-    }
+    setIsSubmitting(true);
     try {
-      const response = await fetch(`${url}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          aadhaarNumber: aadhar,
-          enrollmentNumber: registration,
-        }),
-      });
+      let data = {
+        enrollmentNumber,
+        aadharNumber: Number(aadharNumber),
+      };
 
-      const data = await response.json();
-
-      if (response.status.toString() === "200") {
-        await SecureStore.setItemAsync("token", data.token);
-        // Optionally, you could store user data if returned in the response
-        Alert.alert(
-          `Sign-Up Successful. OTP sent to your registered mobile number.`
+      const response = await axios.post(`${url}student/register`, data);
+      if (response.status === 200) {
+        const referenceId = response.data.referenceId.toString();
+        await SecureStore.setItemAsync(
+          "referenceId",
+          referenceId
         );
-        // After the sign-up process, redirect to the OTP verification page
+        Alert.alert("Success", response.data.message);
         router.push("/otp-verification");
       } else {
-        Alert.alert("Failed to sign up. Please check your details.");
+        Alert.alert("Error", "Unexpected response from the server.");
       }
     } catch (error) {
-      console.error(error);
-      Alert.alert("An error occurred. Please try again later.");
+      if (error.response) {
+        Alert.alert(error.response.data.message);
+      } else {
+        Alert.alert(error.message);
+        Alert.alert("Something went wrong. Please try again.");
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -70,16 +69,15 @@ const SignUp = () => {
       <TextInput
         placeholder="Aadhar Number"
         className="w-4/5 h-12 border border-gray-400 mb-4 px-4 rounded-lg bg-white shadow"
-        onChangeText={setAadhar}
-        value={aadhar}
+        onChangeText={setaadharNumber}
+        value={aadharNumber}
         keyboardType="numeric"
       />
       <TextInput
         placeholder="Enrollment Number"
         className="w-4/5 h-12 border border-gray-400 mb-4 px-4 rounded-lg bg-white shadow"
-        onChangeText={setRegistration}
-        value={registration}
-        keyboardType="numeric"
+        onChangeText={setenrollmentNumber}
+        value={enrollmentNumber}
       />
 
       {/* OTP Information */}
@@ -91,6 +89,7 @@ const SignUp = () => {
       <TouchableOpacity
         className="w-4/5 mt-6 flex justify-center items-center bg-orange-400 py-2 px-6 rounded-lg"
         onPress={handleSignUp}
+        disabled={isSubmitting}
       >
         <Text className="text-white font-bold text-lg">Sign Up</Text>
       </TouchableOpacity>

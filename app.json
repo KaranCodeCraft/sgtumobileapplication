@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "SGTU",
-    "slug": "awesome",
+    "name": "SGTU Student Application",
+    "slug": "sikkim-global-technical-university",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/appicon.jpg",
@@ -16,7 +16,7 @@
         "foregroundImage": "./Assets/logo.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "SGTU Student Application"
+      "package": "com.dev_karan.sikkimglobaltechnicaluniversity"
     },
     "web": {
       "bundler": "metro",
@@ -43,8 +43,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "405728b6-a42d-44f5-b2be-9296b48b41c3"
+        "projectId": "0a013b52-efeb-4c8c-96e9-1cebaa009136"
       }
-    }
+    },
+    "owner": "dev_karan"
   }
 }

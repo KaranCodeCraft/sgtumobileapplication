@@ -1,27 +1,20 @@
 import { useState } from "react";
 import ApiContext from "./ApiContext";
-import { Alert } from "react-native";
+import axios from "axios";
+import * as SecureStore from "expo-secure-store";
 
 const ApiState = (props) => {
-  const url = "https://api.sikkimglobaltechnicaluniversity.co.in/";
-  // const url = "http://192.168.1.100:5000/";
+  // const url = "https://api.sikkimglobaltechnicaluniversity.co.in/";
+  const url = "http://192.168.1.100:5005/";
   const [user, setUser] = useState("");
+  const [token, setToken] = useState(null)
 
-  async function verifyToken(token) {
+    async function verifyToken(token) {
     try {
-      const response = await fetch(`${url}/api/aadhaar-login/verify-token`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ token }),
-      });
-      const data = await response.json();
-      setUser(data.username);
-
-      if (response.status == 200) return true;
-
-      return false;
+      const response = await axios.get(`${url}verifyToken`, {headers: {
+          Authorization: `Bearer ${token}`, 
+        }})
+      return true
     } catch (error) {
       console.error("Error verifying token:", error);
       return false;

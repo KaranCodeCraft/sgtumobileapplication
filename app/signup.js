@@ -5,11 +5,13 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import React, { useContext, useState } from "react";
 import { useRouter } from "expo-router";
 import ApiContext from "@/context/ApiContext";
 import * as SecureStore from "expo-secure-store";
+import { useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
 
 const SignUp = () => {
@@ -17,7 +19,8 @@ const SignUp = () => {
   const [aadharNumber, setaadharNumber] = useState("");
   const [enrollmentNumber, setenrollmentNumber] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { url } = useContext(ApiContext);
+  const { url, verifyToken } = useContext(ApiContext);
+    const [isVerifying, setIsVerifying] = useState(true);
 
   const handleSignUp = async () => {
     setIsSubmitting(true);
@@ -28,7 +31,7 @@ const SignUp = () => {
       };
 
       const response = await axios.post(`${url}student/register`, data);
-      if (response.status === 200) {
+     
         const referenceId = response.data.referenceId.toString();
         await SecureStore.setItemAsync(
           "referenceId",
@@ -36,9 +39,9 @@ const SignUp = () => {
         );
         Alert.alert("Success", response.data.message);
         router.push("/otp-verification");
-      } else {
-        Alert.alert("Error", "Unexpected response from the server.");
-      }
+      
+     
+      
     } catch (error) {
       if (error.response) {
         Alert.alert(error.response.data.message);
@@ -50,6 +53,39 @@ const SignUp = () => {
       setIsSubmitting(false);
     }
   };
+
+    const checkToken = React.useCallback(async () => {
+      try {
+        const token = await SecureStore.getItemAsync("token");
+        // Alert.alert();
+        if (token) {
+          const isValid = await verifyToken(token);
+          if (isValid) {
+            router.push("/home");
+          } 
+        }
+      } catch (error) {
+        console.error("Error retrieving token:", error);
+      } finally {
+        setIsVerifying(false);
+      }
+    }, [router, verifyToken]);
+
+  useFocusEffect(
+      React.useCallback(() => {
+        checkToken();
+      }, [checkToken])
+    );
+
+      if (isVerifying) {
+        return (
+          <View className="flex-1 justify-center py-20">
+            <ActivityIndicator size="large" color="#0000ff" />
+            <Text className="font-xl mb-20">Verifying...</Text>
+          </View>
+        );
+      }
+
 
   return (
     <View className="flex-1 justify-center items-center bg-gray-100 p-6">
@@ -91,7 +127,9 @@ const SignUp = () => {
         onPress={handleSignUp}
         disabled={isSubmitting}
       >
-        <Text className="text-white font-bold text-lg">Sign Up</Text>
+        <Text className="text-white font-bold text-lg">
+          {isSubmitting ? "Sending OTP..." : "Sign Up"}
+        </Text>
       </TouchableOpacity>
 
       {/* Redirect to Login */}

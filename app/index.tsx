@@ -17,7 +17,7 @@ const Index = () => {
       if (token) {
         const isValid = await verifyToken(token);
         if (isValid) {
-          Alert.alert("Verification Successful!");
+          // Alert.alert("Verification Successful!");
           router.push("/home");
         } else {
           router.push("/login");

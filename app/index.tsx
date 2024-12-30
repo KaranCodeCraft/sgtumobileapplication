@@ -6,7 +6,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import ApiContext from "@/context/ApiContext";
 
 const Index = () => {
-  const { verifyToken } = useContext(ApiContext);
+  const { verifyToken, setToken } = useContext(ApiContext);
   const router = useRouter();
   const [isVerifying, setIsVerifying] = useState(true);
 
@@ -17,6 +17,7 @@ const Index = () => {
       if (token) {
         const isValid = await verifyToken(token);
         if (isValid) {
+          setToken(token)
           // Alert.alert("Verification Successful!");
           router.push("/home");
         } else {

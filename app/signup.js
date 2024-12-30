@@ -20,7 +20,7 @@ const SignUp = () => {
   const [enrollmentNumber, setenrollmentNumber] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { url, verifyToken } = useContext(ApiContext);
-    const [isVerifying, setIsVerifying] = useState(true);
+  const [isVerifying, setIsVerifying] = useState(true);
 
   const handleSignUp = async () => {
     setIsSubmitting(true);
@@ -29,9 +29,7 @@ const SignUp = () => {
         enrollmentNumber,
         aadharNumber: Number(aadharNumber),
       };
-
       const response = await axios.post(`${url}student/register`, data);
-     
         const referenceId = response.data.referenceId.toString();
         await SecureStore.setItemAsync(
           "referenceId",
@@ -39,9 +37,6 @@ const SignUp = () => {
         );
         Alert.alert("Success", response.data.message);
         router.push("/otp-verification");
-      
-     
-      
     } catch (error) {
       if (error.response) {
         Alert.alert(error.response.data.message);

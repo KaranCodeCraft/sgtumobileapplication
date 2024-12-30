@@ -15,7 +15,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
 
 const Login = () => {
-  const { setUser, url, verifyToken } = useContext(ApiContext); // ApiContext provides API URL, user state, and token verification function
+  const { setUser, url, verifyToken, setToken } = useContext(ApiContext); // ApiContext provides API URL, user state, and token verification function
   const [aadharNumber, setaadharNumber] = useState(""); // State for Aadhar number
   const [enrollmentNumber, setEnrollmentNumber] = useState(""); // State for enrollment number
   const [isVerifying, setIsVerifying] = useState(true); // State to handle token verification
@@ -36,6 +36,7 @@ const Login = () => {
 
       // Save token in SecureStore
       await SecureStore.setItemAsync("token", response.data.token);
+      setToken(response.data.token)
 
       // Set user state
       setUser(response.data.name);

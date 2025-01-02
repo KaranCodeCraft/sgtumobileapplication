@@ -18,7 +18,11 @@ const Notifications = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
+        setLoading(true);
         fetchnotifcation();
+        setInterval(() => {
+          fetchnotifcation();
+        }, 25000);
       } catch (error) {
         console.error("Error fetching notifications:", error);
       } finally {
@@ -85,7 +89,7 @@ const Notifications = () => {
               {selectedNotification?.title}
             </Text>
             <Text className="text-gray-700 mb-4">
-              {selectedNotification?.description}
+              {selectedNotification?.message}
             </Text>
             <TouchableOpacity
               className="bg-blue-500 px-6 py-2 rounded-md"

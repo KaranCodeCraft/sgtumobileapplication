@@ -1,13 +1,13 @@
 import { useState } from "react";
 import ApiContext from "./ApiContext";
 import axios from "axios";
-import * as SecureStore from "expo-secure-store";
 
 const ApiState = (props) => {
-  // const url = "https://api.sikkimglobaltechnicaluniversity.co.in/";
-  const url = "http://192.168.1.100:5005/";
+  const url = "https://api.sikkimglobaltechnicaluniversity.co.in/";
+  // const url = "http://192.168.1.100:5005/";
   const [user, setUser] = useState("");
   const [token, setToken] = useState(null)
+  const [id, setId] = useState(null)
   const [notification, setNotification] = useState([])
 
     async function verifyToken(token) {
@@ -15,6 +15,8 @@ const ApiState = (props) => {
       const response = await axios.get(`${url}verifyToken`, {headers: {
           Authorization: `Bearer ${token}`, 
         }})
+      await SecureStore.setItemAsync("id", response.data.id);
+      setId(response.data.id)
       return true
     } catch (error) {
       console.error("Error verifying token:", error);
@@ -29,8 +31,6 @@ const ApiState = (props) => {
         },
       });
       setNotification(response.data.notifications);
-      // console.log(response.data.notifications);
-      
     } catch (error) {
       console.log("Error fetching Notification", error);
     }
@@ -46,7 +46,9 @@ const ApiState = (props) => {
         verifyToken,
         notification,
         setToken,
-        fetchnotifcation
+        fetchnotifcation,
+        id,
+        setId,
       }}
     >
       {props.children}

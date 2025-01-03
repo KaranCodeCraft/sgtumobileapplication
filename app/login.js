@@ -35,8 +35,8 @@ const Login = () => {
       });
 
       // Save token in SecureStore
-      await SecureStore.setItemAsync("token", response.data.token);
-      await SecureStore.setItemAsync("id", response.data.id);
+      await SecureStore.setItemAsync("token", response.data.token.toString());
+      await SecureStore.setItemAsync("id", response.data.id.toString());
       setToken(response.data.token)
       setId(response.data.id);
       // Set user state

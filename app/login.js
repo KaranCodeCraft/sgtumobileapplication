@@ -20,13 +20,14 @@ const Login = () => {
   const [enrollmentNumber, setEnrollmentNumber] = useState(""); // State for enrollment number
   const [isVerifying, setIsVerifying] = useState(true); // State to handle token verification
   const router = useRouter(); // Router for navigation
+  const [logging, setLogging] = useState(false)
 
   // Function to handle login
   const handleLogin = async () => {
     if (!aadharNumber || !enrollmentNumber) {
       return Alert.alert("Please fill all the fields"); // Ensure all fields are filled
     }
-
+    setLogging(true)
     try {
       // API call to login endpoint
       const response = await axios.post(`${url}student/login`, {
@@ -44,7 +45,7 @@ const Login = () => {
 
       // Notify user of successful login
       Alert.alert(`Login Successful: ${response.data.name}`);
-
+      setLogging(false)
       // Navigate to the home page
       router.push("/home");
     } catch (error) {
@@ -54,6 +55,8 @@ const Login = () => {
       } else {
         Alert.alert("Something went wrong. Please try again."); // Handle general errors
       }
+    }finally{
+      setLogging(false);
     }
   };
 
@@ -107,26 +110,30 @@ const Login = () => {
       <Text className="text-blue-600 font-bold text-2xl mb-4">Login Page</Text>
       <TextInput
         placeholder="Aadhar Number"
-        className="w-4/5 h-12 border border-gray-400 mb-4 px-4 rounded-lg bg-white shadow"
+        className="w-4/5 h-14 border border-gray-700 mb-6 px-4 rounded-lg bg-white shadow"
         onChangeText={setaadharNumber} // Update Aadhar number state
         value={aadharNumber}
         keyboardType="number-pad"
       />
       <TextInput
         placeholder="Enrollment Number"
-        className="w-4/5 h-12 border border-gray-400 mb-4 px-4 rounded-lg bg-white shadow"
+        className="w-4/5 h-14 border border-gray-700 mb-4 px-4 rounded-lg bg-white shadow"
         onChangeText={setEnrollmentNumber} // Update enrollment number state
         value={enrollmentNumber}
       />
       <TouchableOpacity
-        className="w-4/5 mt-6 flex justify-center items-center bg-orange-400 py-2 px-6 rounded-lg"
+        className="w-4/5 mt-8 flex justify-center items-center bg-orange-400 py-3 px-6 rounded-lg"
         onPress={handleLogin} // Trigger login function
+        disabled={logging}
       >
-        <Text className="text-white font-bold text-lg">Login</Text>
+        <Text className="text-white font-bold text-lg">
+          {logging ? "logging In" : "Login"}
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity
-        className="w-4/5 mt-6 flex justify-center items-center bg-blue-500 py-2 px-6 rounded-lg"
+        className="w-4/5 mt-6 flex justify-center items-center bg-blue-500 py-3 px-6 rounded-lg"
         onPress={() => router.push("/signup")} // Navigate to sign-up page
+        disabled={logging}
       >
         <Text className="text-white font-bold text-lg">Register</Text>
       </TouchableOpacity>

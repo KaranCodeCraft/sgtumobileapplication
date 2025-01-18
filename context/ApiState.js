@@ -11,7 +11,7 @@ const ApiState = (props) => {
   const [id, setId] = useState(null)
   const [notification, setNotification] = useState([])
 
-    async function verifyToken(token) {
+  async function verifyToken(token) {
     try {
       const response = await axios.get(`${url}verifyToken`, {headers: {
           Authorization: `Bearer ${token}`, 
@@ -24,6 +24,7 @@ const ApiState = (props) => {
       return false;
     }
   }
+  
   async function fetchnotifcation(){
     try {
       const response = await axios.get(`${url}notification`, {

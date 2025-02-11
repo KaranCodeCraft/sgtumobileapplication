@@ -24,7 +24,7 @@ const StudentPanel = () => {
         // const storedToken = await SecureStore.getItemAsync("token");
         // setToken(storedToken);
       } catch (error) {
-        console.error("Error fetching token", error);
+        // console.error("Error fetching token", error);
       } finally {
         setLoading(false);
       }
@@ -73,7 +73,7 @@ const StudentPanel = () => {
 
       {/* Welcome Text */}
       <Text className="text-2xl font-bold text-gray-800 text-center mb-2">
-        Welcome, {user || "Student"}!
+        Welcome, {user.name || "Student"}!
       </Text>
       <Text className="text-base text-gray-600 text-center mb-6">
         Choose an option below:
@@ -126,7 +126,7 @@ const StudentPanel = () => {
           >
             <Ionicons name="person-add" size={50} color="#9C27B0" />
             <Text className="text-sm text-gray-700 mt-2 text-center">
-              Manage Subscription
+              Profile
             </Text>
           </TouchableOpacity>
         </View>

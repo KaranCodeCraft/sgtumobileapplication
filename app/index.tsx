@@ -12,27 +12,27 @@ const Index = () => {
 
   const checkToken = React.useCallback(async () => {
     try {
+      setIsVerifying(true); 
       const token = await SecureStore.getItemAsync("token");
-      // Alert.alert();
-      if (token) {
-        const isValid = await verifyToken(token);
+       if (!token) {
+         router.replace("/login");
+         return;
+       }
+      //  console.log("Retrieved Token:", token);
+        const isValid = await verifyToken(token.replace(/^"|"$/g, ""));
         if (isValid) {
-          setToken(token)
-          // Alert.alert("Verification Successful!");
-          router.push("/home");
+          setToken(token.replace(/^"|"$/g, ""))
+          router.replace("/home");
         } else {
-          router.push("/login");
+          router.replace("/login");
         }
-      } else {
-        router.push("/login");
-      }
     } catch (error) {
-      console.error("Error retrieving token:", error);
+      // console.error("Error retrieving token:", error);
       Alert.alert("Error", "An error occurred while verifying the token.");
     } finally {
       setIsVerifying(false);
     }
-  }, [router, verifyToken]);
+  }, [router]);
 
   useFocusEffect(
     React.useCallback(() => {

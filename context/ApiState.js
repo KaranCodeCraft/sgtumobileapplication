@@ -13,6 +13,8 @@ const ApiState = (props) => {
 
   async function verifyToken(token) {
     try {
+      // console.log(`Bearer ${token}`);
+      
       const response = await axios.get(`${url}verifyToken`, {headers: {
           Authorization: `Bearer ${token}`, 
         }})
@@ -20,7 +22,7 @@ const ApiState = (props) => {
       setId(response.data.id)
       return true
     } catch (error) {
-      console.error("Error verifying token:", error);
+      // console.error("Error verifying token:", error);
       return false;
     }
   }

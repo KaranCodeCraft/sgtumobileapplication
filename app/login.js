@@ -36,18 +36,20 @@ const Login = () => {
       });
 
       // Save token in SecureStore
-      await SecureStore.setItemAsync("token", response.data.token.toString());
-      await SecureStore.setItemAsync("id", response.data.id.toString());
-      setToken(response.data.token)
+      // console.log(JSON.stringify(response.data.token));
+      
+      await SecureStore.setItemAsync("token", JSON.stringify(response.data.token));
+      await SecureStore.setItemAsync("id", JSON.stringify(response.data.id));
+      setToken(response.data.token.replace(/^"|"$/g, ""));
       setId(response.data.id);
       // Set user state
-      setUser(response.data.name);
+      setUser(response.data.data);
 
       // Notify user of successful login
       Alert.alert(`Login Successful: ${response.data.name}`);
       setLogging(false)
       // Navigate to the home page
-      router.push("/home");
+      router.replace("/home");
     } catch (error) {
       // Handle API errors
       if (error.response) {
@@ -71,13 +73,12 @@ const Login = () => {
             setIsVerifying(false); // Stop verifying if token is missing
             return;
           }
-
           const isValid = await verifyToken(token); // Call verifyToken function
           if (isValid) {
-            router.push("/home"); // Navigate to the home page if token is valid
+            router.replace("/home"); // Navigate to the home page if token is valid
           }
         } catch (error) {
-          console.error("Error verifying token:", error); // Log errors
+          // console.error("Error verifying token:", error); // Log errors
         } finally {
           setIsVerifying(false); // Stop verifying
         }

@@ -4,6 +4,7 @@ import ApiState from "@/context/ApiState";
 import "../global.css";
 
 const _layout = () => {
+  // console.log("in the layout");
   return (
     <ApiState>
       <Stack screenOptions={{ headerShown: false }}>
